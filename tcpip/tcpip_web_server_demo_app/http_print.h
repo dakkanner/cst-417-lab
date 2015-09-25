@@ -80,6 +80,7 @@ void HTTPPrint_ddns_service(HTTP_CONN_HANDLE connHandle,uint16_t);
 void HTTPPrint_ddns_user(HTTP_CONN_HANDLE connHandle);
 void HTTPPrint_ddns_pass(HTTP_CONN_HANDLE connHandle);
 void HTTPPrint_ddns_host(HTTP_CONN_HANDLE connHandle);
+void HTTPPrint_formVariable(HTTP_CONN_HANDLE connHandle,uint16_t);
 
 void HTTPPrint(HTTP_CONN_HANDLE connHandle,uint32_t callbackID)
 {
@@ -126,139 +127,154 @@ TCP_SOCKET sktHTTP;
 			HTTPPrint_led(connHandle,1);
 			break;
         case 0x0000000d:
-			HTTPPrint_lcdtext(connHandle);
-			break;
-        case 0x0000000e:
-			HTTPPrint_ledSelected(connHandle,4,true);
-			break;
-        case 0x0000000f:
-			HTTPPrint_ledSelected(connHandle,4,false);
-			break;
-        case 0x00000010:
-			HTTPPrint_ledSelected(connHandle,3,true);
-			break;
-        case 0x00000011:
-			HTTPPrint_ledSelected(connHandle,3,false);
-			break;
-        case 0x00000012:
-			HTTPPrint_ledSelected(connHandle,2,true);
-			break;
-        case 0x00000013:
-			HTTPPrint_ledSelected(connHandle,2,false);
-			break;
-        case 0x00000014:
-			HTTPPrint_ledSelected(connHandle,1,true);
-			break;
-        case 0x00000015:
-			HTTPPrint_ledSelected(connHandle,1,false);
-			break;
-        case 0x00000016:
-			HTTPPrint_version(connHandle);
-			break;
-        case 0x00000017:
 			HTTPPrint_led(connHandle,0);
 			break;
+        case 0x0000000e:
+			HTTPPrint_lcdtext(connHandle);
+			break;
+        case 0x0000000f:
+			HTTPPrint_ledSelected(connHandle,5,true);
+			break;
+        case 0x00000010:
+			HTTPPrint_ledSelected(connHandle,5,false);
+			break;
+        case 0x00000011:
+			HTTPPrint_ledSelected(connHandle,4,true);
+			break;
+        case 0x00000012:
+			HTTPPrint_ledSelected(connHandle,4,false);
+			break;
+        case 0x00000013:
+			HTTPPrint_ledSelected(connHandle,3,true);
+			break;
+        case 0x00000014:
+			HTTPPrint_ledSelected(connHandle,3,false);
+			break;
+        case 0x00000015:
+			HTTPPrint_ledSelected(connHandle,2,true);
+			break;
+        case 0x00000016:
+			HTTPPrint_ledSelected(connHandle,2,false);
+			break;
+        case 0x00000017:
+			HTTPPrint_ledSelected(connHandle,1,true);
+			break;
         case 0x00000018:
-			HTTPPrint_btn(connHandle,0);
+			HTTPPrint_ledSelected(connHandle,1,false);
 			break;
         case 0x00000019:
-			HTTPPrint_btn(connHandle,1);
+			HTTPPrint_version(connHandle);
 			break;
         case 0x0000001a:
-			HTTPPrint_btn(connHandle,2);
+			HTTPPrint_btn(connHandle,0);
 			break;
         case 0x0000001b:
-			HTTPPrint_btn(connHandle,3);
+			HTTPPrint_btn(connHandle,1);
 			break;
         case 0x0000001c:
-			HTTPPrint_pot(connHandle);
+			HTTPPrint_btn(connHandle,2);
 			break;
         case 0x0000001d:
-			HTTPPrint_uploadedmd5(connHandle);
+			HTTPPrint_btn(connHandle,3);
 			break;
         case 0x0000001e:
-			HTTPPrint_snmp_en(connHandle);
+			HTTPPrint_pot(connHandle);
 			break;
         case 0x0000001f:
-			HTTPPrint_read_comm(connHandle,0);
+			HTTPPrint_uploadedmd5(connHandle);
 			break;
         case 0x00000020:
-			HTTPPrint_read_comm(connHandle,1);
+			HTTPPrint_snmp_en(connHandle);
 			break;
         case 0x00000021:
-			HTTPPrint_read_comm(connHandle,2);
+			HTTPPrint_read_comm(connHandle,0);
 			break;
         case 0x00000022:
-			HTTPPrint_write_comm(connHandle,0);
+			HTTPPrint_read_comm(connHandle,1);
 			break;
         case 0x00000023:
-			HTTPPrint_write_comm(connHandle,1);
+			HTTPPrint_read_comm(connHandle,2);
 			break;
         case 0x00000024:
-			HTTPPrint_write_comm(connHandle,2);
+			HTTPPrint_write_comm(connHandle,0);
 			break;
         case 0x00000025:
-			HTTPPrint_status_fail(connHandle);
+			HTTPPrint_write_comm(connHandle,1);
 			break;
         case 0x00000026:
-			HTTPPrint_config_mac(connHandle);
+			HTTPPrint_write_comm(connHandle,2);
 			break;
         case 0x00000027:
-			HTTPPrint_config_hostname(connHandle);
+			HTTPPrint_status_fail(connHandle);
 			break;
         case 0x00000028:
-			HTTPPrint_config_dhcpchecked(connHandle);
+			HTTPPrint_config_mac(connHandle);
 			break;
         case 0x00000029:
-			HTTPPrint_config_ip(connHandle);
+			HTTPPrint_config_hostname(connHandle);
 			break;
         case 0x0000002a:
-			HTTPPrint_config_gw(connHandle);
+			HTTPPrint_config_dhcpchecked(connHandle);
 			break;
         case 0x0000002b:
-			HTTPPrint_config_subnet(connHandle);
+			HTTPPrint_config_ip(connHandle);
 			break;
         case 0x0000002c:
-			HTTPPrint_config_dns1(connHandle);
+			HTTPPrint_config_gw(connHandle);
 			break;
         case 0x0000002d:
-			HTTPPrint_config_dns2(connHandle);
+			HTTPPrint_config_subnet(connHandle);
 			break;
         case 0x0000002e:
-			HTTPPrint_reboot(connHandle);
+			HTTPPrint_config_dns1(connHandle);
 			break;
         case 0x0000002f:
-			HTTPPrint_rebootaddr(connHandle);
+			HTTPPrint_config_dns2(connHandle);
 			break;
         case 0x00000030:
-			HTTPPrint_status_ok(connHandle);
+			HTTPPrint_reboot(connHandle);
 			break;
         case 0x00000031:
-			HTTPPrint_smtps_en(connHandle);
+			HTTPPrint_rebootaddr(connHandle);
 			break;
         case 0x00000032:
-			HTTPPrint_ddns_status(connHandle);
+			HTTPPrint_status_ok(connHandle);
 			break;
         case 0x00000033:
-			HTTPPrint_ddns_status_msg(connHandle);
+			HTTPPrint_smtps_en(connHandle);
 			break;
         case 0x00000034:
-			HTTPPrint_ddns_service(connHandle,0);
+			HTTPPrint_ddns_status(connHandle);
 			break;
         case 0x00000035:
-			HTTPPrint_ddns_service(connHandle,1);
+			HTTPPrint_ddns_status_msg(connHandle);
 			break;
         case 0x00000036:
-			HTTPPrint_ddns_service(connHandle,2);
+			HTTPPrint_ddns_service(connHandle,0);
 			break;
         case 0x00000037:
-			HTTPPrint_ddns_user(connHandle);
+			HTTPPrint_ddns_service(connHandle,1);
 			break;
         case 0x00000038:
-			HTTPPrint_ddns_pass(connHandle);
+			HTTPPrint_ddns_service(connHandle,2);
 			break;
         case 0x00000039:
+			HTTPPrint_ddns_user(connHandle);
+			break;
+        case 0x0000003a:
+			HTTPPrint_ddns_pass(connHandle);
+			break;
+        case 0x0000003b:
 			HTTPPrint_ddns_host(connHandle);
+			break;
+        case 0x0000003c:
+			HTTPPrint_formVariable(connHandle,1);
+			break;
+        case 0x0000003d:
+			HTTPPrint_formVariable(connHandle,2);
+			break;
+        case 0x0000003e:
+			HTTPPrint_formVariable(connHandle,3);
 			break;
 		default:
 			// Output notification for undefined values

@@ -1,6 +1,41 @@
 ~inc:header.inc~
 <div id="content">
 
+
+<h1>CST 417</h1>
+<h2>Lab 05</h2>
+
+
+<form method="get" action="forms.htm">
+<div class="examplebox">
+<b>Destination Address</b> (Must be 3 digits per octet): <input type="text" name="address" maxlength="15" value="~formVariable(1)~"> &nbsp; <input type="submit" value="Save">
+</div>
+</form>
+
+<form method="get" action="forms.htm">
+<div class="examplebox">
+<b>UDP Port:</b> <input type="text" name="port" maxlength="6" value="~formVariable(2)~"> &nbsp; <input type="submit" value="Save">
+</div>
+</form>
+
+<form method="get" action="forms.htm">
+<div class="examplebox">
+<b>Message to Send</b> (128 chars max): <input type="text" name="message" maxlength="128" value="~formVariable(3)~"> &nbsp; <input type="submit" value="Save">
+</div>
+</form>
+
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+
+
+
+
 <h1>Form Processing</h1>
 
 <p>Your application will likely need to accept data from the user.  Forms allow
@@ -22,6 +57,7 @@ method to retrieve submitted values for processing.</p>
 
 <form method="get" action="forms.htm">
 <div class="examplebox">
+<b>5:</b> <select name="led5"><option value="1" ~ledSelected(5,true)~>On</option><option value="0" ~ledSelected(5,false)~>Off</option></select>&nbsp; 
 <b>4:</b> <select name="led4"><option value="1" ~ledSelected(4,true)~>On</option><option value="0" ~ledSelected(4,false)~>Off</option></select>&nbsp; 
 <b>3:</b> <select name="led3"><option value="1" ~ledSelected(3,true)~>On</option><option value="0" ~ledSelected(3,false)~>Off</option></select>&nbsp; 
 <b>2:</b> <select name="led2"><option value="1" ~ledSelected(2,true)~>On</option><option value="0" ~ledSelected(2,false)~>Off</option></select>&nbsp; 
@@ -29,8 +65,6 @@ method to retrieve submitted values for processing.</p>
 <br /><input type="submit" value="Save" style="margin-top:5px;">
 </div>
 </form>
-
-<p class="exercise"><b>Exercise:</b> Modify this form to support LED 5.</p>
 
 <h6></h6>
 

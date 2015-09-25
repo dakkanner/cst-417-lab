@@ -48,6 +48,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include <common/hashes.h>
 
+#include "tcpip_modules_config.h"
+
+#include <system/system_userio.h>
+
+
 /****************************************************************************
   Section:
 	Definitions
@@ -180,6 +185,10 @@ HTTP_IO_RESULT HTTPExecuteGet(HTTP_CONN_HANDLE connHandle)
 	const uint8_t *ptr;
 	uint8_t filename[20];
 	uint8_t* httpDataBuff;
+        
+        char address[50];
+        char port[50];
+        char message[512];
 
 	// Load the file name
 	// Make sure uint8_t filename[] above is large enough for your longest name
@@ -190,6 +199,10 @@ HTTP_IO_RESULT HTTPExecuteGet(HTTP_CONN_HANDLE connHandle)
 	if(!memcmp(filename, "forms.htm", 9))
 	{
 		// Seek out each of the four LED strings, and if it exists set the LED states
+		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"led5");
+		if(ptr)
+			LED5_IO = (*ptr == '1');
+
 		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"led4");
 		if(ptr)
 			LED4_IO = (*ptr == '1');
@@ -205,6 +218,40 @@ HTTP_IO_RESULT HTTPExecuteGet(HTTP_CONN_HANDLE connHandle)
 		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"led1");
 		if(ptr)
 			LED1_IO = (*ptr == '1');
+                
+                
+		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"address");
+		if(ptr)
+                {
+			strcpy(address, (char*)ptr);
+                        DBPRINTF("Input Destination Address: ");
+                        DBPRINTF((char*)ptr);
+                        DBPRINTF("\n");
+                        if(SetDestinationAddressFromString((char*)address) != 0)
+                            DBPRINTF("!Destination address change failed!\n");
+                }
+                
+		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"port");
+		if(ptr)
+                {
+			strcpy(port, (char*)ptr);
+                        DBPRINTF("New Port: ");
+                        DBPRINTF((char*)ptr);
+                        DBPRINTF("\n");
+                        if(SetPortFromString(port) != 0)
+                            DBPRINTF("!Destination port change failed!\n");
+                }
+                
+		ptr = HTTPGetArg(httpDataBuff, (const uint8_t *)"message");
+		if(ptr)
+                {
+			strcpy(message, (char*)ptr);
+                        DBPRINTF("New Message: ");
+                        DBPRINTF((char*)ptr);
+                        DBPRINTF("\n");
+                        if(SetMessageToSend(message) != 0)
+                            DBPRINTF("!Message change failed!\n");
+                }
 	}
 
 	// If it's the LED updater file
@@ -254,6 +301,34 @@ HTTP_IO_RESULT HTTPExecuteGet(HTTP_CONN_HANDLE connHandle)
 
 	return HTTP_IO_DONE;
 }
+
+
+void HTTPPrint_formVariable(HTTP_CONN_HANDLE connHandle, uint16_t num)
+{
+	char buffer[512] = "";
+	// Determine which variable
+	switch(num)
+	{
+		case 1:
+			// IP address
+			GetDestinationAddress(buffer);
+			break;
+		case 2:
+			// Port
+			GetPort(buffer);
+			break;
+		case 3:
+			// Message
+			GetMessage(buffer);
+			break;
+		default:
+			strcpy(buffer, "?");
+	}
+
+	// Print the output
+	TCPPutString(HTTPCurConnectionSocketGet(connHandle), (const uint8_t*)buffer);
+}
+
 
 
 /****************************************************************************

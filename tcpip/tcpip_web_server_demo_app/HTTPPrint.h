@@ -130,138 +130,144 @@ void HTTPPrint(DWORD callbackID)
 			HTTPPrint_led(1);
 			break;
         case 0x0000000d:
-			HTTPPrint_lcdtext();
-			break;
-        case 0x0000000e:
-			HTTPPrint_ledSelected(4,true);
-			break;
-        case 0x0000000f:
-			HTTPPrint_ledSelected(4,false);
-			break;
-        case 0x00000010:
-			HTTPPrint_ledSelected(3,true);
-			break;
-        case 0x00000011:
-			HTTPPrint_ledSelected(3,false);
-			break;
-        case 0x00000012:
-			HTTPPrint_ledSelected(2,true);
-			break;
-        case 0x00000013:
-			HTTPPrint_ledSelected(2,false);
-			break;
-        case 0x00000014:
-			HTTPPrint_ledSelected(1,true);
-			break;
-        case 0x00000015:
-			HTTPPrint_ledSelected(1,false);
-			break;
-        case 0x00000016:
-			HTTPPrint_version();
-			break;
-        case 0x00000017:
 			HTTPPrint_led(0);
 			break;
+        case 0x0000000e:
+			HTTPPrint_lcdtext();
+			break;
+        case 0x0000000f:
+			HTTPPrint_ledSelected(5,true);
+			break;
+        case 0x00000010:
+			HTTPPrint_ledSelected(5,false);
+			break;
+        case 0x00000011:
+			HTTPPrint_ledSelected(4,true);
+			break;
+        case 0x00000012:
+			HTTPPrint_ledSelected(4,false);
+			break;
+        case 0x00000013:
+			HTTPPrint_ledSelected(3,true);
+			break;
+        case 0x00000014:
+			HTTPPrint_ledSelected(3,false);
+			break;
+        case 0x00000015:
+			HTTPPrint_ledSelected(2,true);
+			break;
+        case 0x00000016:
+			HTTPPrint_ledSelected(2,false);
+			break;
+        case 0x00000017:
+			HTTPPrint_ledSelected(1,true);
+			break;
         case 0x00000018:
-			HTTPPrint_btn(0);
+			HTTPPrint_ledSelected(1,false);
 			break;
         case 0x00000019:
-			HTTPPrint_btn(1);
+			HTTPPrint_version();
 			break;
         case 0x0000001a:
-			HTTPPrint_btn(2);
+			HTTPPrint_btn(0);
 			break;
         case 0x0000001b:
-			HTTPPrint_btn(3);
+			HTTPPrint_btn(1);
 			break;
         case 0x0000001c:
-			HTTPPrint_pot();
+			HTTPPrint_btn(2);
 			break;
         case 0x0000001d:
-			HTTPPrint_uploadedmd5();
+			HTTPPrint_btn(3);
 			break;
         case 0x0000001e:
-			HTTPPrint_snmp_en();
+			HTTPPrint_pot();
 			break;
         case 0x0000001f:
-			HTTPPrint_read_comm(0);
+			HTTPPrint_uploadedmd5();
 			break;
         case 0x00000020:
-			HTTPPrint_read_comm(1);
+			HTTPPrint_snmp_en();
 			break;
         case 0x00000021:
-			HTTPPrint_read_comm(2);
+			HTTPPrint_read_comm(0);
 			break;
         case 0x00000022:
-			HTTPPrint_write_comm(0);
+			HTTPPrint_read_comm(1);
 			break;
         case 0x00000023:
-			HTTPPrint_write_comm(1);
+			HTTPPrint_read_comm(2);
 			break;
         case 0x00000024:
-			HTTPPrint_write_comm(2);
+			HTTPPrint_write_comm(0);
 			break;
         case 0x00000025:
-			HTTPPrint_status_fail();
+			HTTPPrint_write_comm(1);
 			break;
         case 0x00000026:
-			HTTPPrint_config_mac();
+			HTTPPrint_write_comm(2);
 			break;
         case 0x00000027:
-			HTTPPrint_config_hostname();
+			HTTPPrint_status_fail();
 			break;
         case 0x00000028:
-			HTTPPrint_config_dhcpchecked();
+			HTTPPrint_config_mac();
 			break;
         case 0x00000029:
-			HTTPPrint_config_ip();
+			HTTPPrint_config_hostname();
 			break;
         case 0x0000002a:
-			HTTPPrint_config_gw();
+			HTTPPrint_config_dhcpchecked();
 			break;
         case 0x0000002b:
-			HTTPPrint_config_subnet();
+			HTTPPrint_config_ip();
 			break;
         case 0x0000002c:
-			HTTPPrint_config_dns1();
+			HTTPPrint_config_gw();
 			break;
         case 0x0000002d:
-			HTTPPrint_config_dns2();
+			HTTPPrint_config_subnet();
 			break;
         case 0x0000002e:
-			HTTPPrint_reboot();
+			HTTPPrint_config_dns1();
 			break;
         case 0x0000002f:
-			HTTPPrint_rebootaddr();
+			HTTPPrint_config_dns2();
 			break;
         case 0x00000030:
-			HTTPPrint_status_ok();
+			HTTPPrint_reboot();
 			break;
         case 0x00000031:
-			HTTPPrint_smtps_en();
+			HTTPPrint_rebootaddr();
 			break;
         case 0x00000032:
-			HTTPPrint_ddns_status();
+			HTTPPrint_status_ok();
 			break;
         case 0x00000033:
-			HTTPPrint_ddns_status_msg();
+			HTTPPrint_smtps_en();
 			break;
         case 0x00000034:
-			HTTPPrint_ddns_service(0);
+			HTTPPrint_ddns_status();
 			break;
         case 0x00000035:
-			HTTPPrint_ddns_service(1);
+			HTTPPrint_ddns_status_msg();
 			break;
         case 0x00000036:
-			HTTPPrint_ddns_service(2);
+			HTTPPrint_ddns_service(0);
 			break;
         case 0x00000037:
-			HTTPPrint_ddns_user();
+			HTTPPrint_ddns_service(1);
 			break;
         case 0x00000038:
-			HTTPPrint_ddns_pass();
+			HTTPPrint_ddns_service(2);
 			break;
         case 0x00000039:
+			HTTPPrint_ddns_user();
+			break;
+        case 0x0000003a:
+			HTTPPrint_ddns_pass();
+			break;
+        case 0x0000003b:
 			HTTPPrint_ddns_host();
 			break;
 		default:

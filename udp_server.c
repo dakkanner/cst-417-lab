@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define BUFLEN 512
-#define PORT 9930
+#define PORT 9933
  
 void err(char *str)
 {

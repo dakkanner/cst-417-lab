@@ -76,5 +76,16 @@ void PingDemoTask (void);
 // address on the UART and/or LCD.
 void DisplayIPValue(IPV4_ADDR IPVal);
 
+// A function for running the primary code of the lab
+int DoTheThing(TCPIP_NET_HANDLE netH);
+
+// Getters/setters used by the web interface
+void GetDestinationAddress(char* buffer);
+void GetPort(char* buffer);
+void GetMessage(char* buffer);
+int SetDestinationAddressFromString(char* addressIn);
+int SetPortFromString(char* portIn);
+int SetMessageToSend(char* messageIn);
+
 
 #endif // _MAINDEMO_H

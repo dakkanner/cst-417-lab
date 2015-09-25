@@ -11,7 +11,10 @@
 +led(3)
 +led(2)
 +led(1)
++led(0)
 +lcdtext
++ledSelected(5,true)
++ledSelected(5,false)
 +ledSelected(4,true)
 +ledSelected(4,false)
 +ledSelected(3,true)
@@ -21,7 +24,6 @@
 +ledSelected(1,true)
 +ledSelected(1,false)
 +version
-+led(0)
 +btn(0)
 +btn(1)
 +btn(2)

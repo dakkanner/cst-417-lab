@@ -34,10 +34,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  *******************************************************************************/
 
-#define _SUPPRESS_PLIB_WARNING
+#define _SUPPRESS_PLIB_WARNING 1
 
 
 #define TCPIP_STACK_MODULE_CONFIGURATION
+#include <stdlib.h>     /* strtol */
+
 // Include all headers for any enabled tcpip functions
 #include "tcpip/tcpip.h"
 
@@ -74,10 +76,21 @@ extern void WF_ProcessEvent(uint16_t event, uint16_t eventInfo);
 
 void ICMPv6Callback(TCPIP_NET_HANDLE hNetIf, uint8_t type, IPV6_ADDR * localIP, IPV6_ADDR * remoteIP, void * header);
 
+static enum _UDPServerState
+{
+    SM_HOME = 0,
+    SM_LISTENING,
+    SM_CLOSING,
+} UDPServerState = SM_HOME;
+
+static IPV4_ADDR remoteAddress;
+static int port;
+uint8_t outputMessage[512];
+
+
 //
 // Main application entry point.
 //
-
 int main(void)
 {
     static IPV4_ADDR dwLastIP[sizeof (TCPIP_HOSTS_CONFIGURATION) / sizeof (*TCPIP_HOSTS_CONFIGURATION)];
@@ -94,12 +107,20 @@ int main(void)
                                                        // the last digit will be incremented by interface
 #endif  // defined (TCPIP_STACK_USE_ZEROCONF_MDNS_SD)
 
+    // 192.168.0.101
+    //remoteAddress.Val = 0x6500A8C0;
+    // 192.168.0.12
+    remoteAddress.Val = 0x1000A8C0;
+    port = 9930;
+    strcpy((char*)outputMessage, "Hola mundo");
+
     DBINIT();
 
     // perform system initialization
     if(!SYS_Initialize())
     {
-        return 0;
+        return 0
+                ;
     }
 
     DBPRINTF("TCPIPStack Version: ");
@@ -159,12 +180,7 @@ int main(void)
     }
 #endif  // defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
 
-    static enum _UDPServerState
-    {
-        SM_HOME = 0,
-        SM_LISTENING,
-        SM_CLOSING,
-    } UDPServerState = SM_HOME;
+
 
     // Now that all items are initialized, begin the co-operative
     // multitasking loop.  This infinite loop will continuously
@@ -275,173 +291,7 @@ int main(void)
 
         //TODO Place code here to poll buttons and perform specified task
 
-//
-// Lab 03 Start
-//
-//#define BUFLEN 512
-        //uint8_t id_input[BUFLEN] = {0};
-        uint8_t output[] = "Hello World";
-        int buttons_pressed;
-
-        uint8_t i, j;
-        uint16_t w, w2;
-        //uint8_t AppBuffer[32];
-        uint8_t AppBuffer[512];
-        uint16_t wMaxGet, wMaxPut, wCurrentChunk;
-
-
-
-        //DBPRINTF("  Opening UDP server\n");
-
-        static IPV4_ADDR remoteAddress;
-        static UDP_SOCKET sokt_serv;
-        static UDP_SOCKET sokt_client;
-
-        // 10.101.0.47   = 0x0A65002F
-        // 192.168.0.101 = 0xC0A80065
-        remoteAddress = dwLastIP[0];
-        //remoteAddress.v4Add.Val = 0xC0A80065;
-        
-        // 192...
-        remoteAddress.v[0] = 0xC0;
-        // 168...
-        remoteAddress.v[1] = 0xA8;
-        // 0...
-        remoteAddress.v[2] = 0xC0;
-        // 101
-        //remoteAddress.v[3] = 0x65;
-        // 12
-        remoteAddress.v[3] = 0x10;
-
-        // [...168.192]
-        remoteAddress.w[0] = 0xA8C0;
-        // [101.0...]
-        //remoteAddress.w[1] = 0x6500;
-        // [12.0...]
-        remoteAddress.w[1] = 0x1000;
-
-        // 192.168.0.101
-        //remoteAddress.Val = 0x6500A8C0;
-        // 192.168.0.12
-        remoteAddress.Val = 0x1000A8C0;
-
-
-        UDPSocketSetNet(sokt_serv, netH);
-        UDPSetOptions(sokt_serv, UDP_OPTION_STRICT_NET, (void*)true);
-        UDPSocketSetNet(sokt_client, netH);
-        UDPSetOptions(sokt_client, UDP_OPTION_STRICT_NET, (void*)true);
-
-        for(j = 0; j < 255; j++)
-        {
-            switch(UDPServerState)
-            {
-            case SM_HOME:
-                // Allocate a socket for this server to listen and accept connections on
-                sokt_serv = UDPOpenServer(IP_ADDRESS_TYPE_IPV4, 9930, NULL);
-                if(sokt_serv == INVALID_SOCKET)
-                {
-                    DBPRINTF("  Error: Can't open UDP server socket\n");
-                }
-                sokt_client = UDPOpenClient(IP_ADDRESS_TYPE_IPV4, 9930, (IP_MULTI_ADDRESS*)&remoteAddress);
-                if(sokt_client == INVALID_SOCKET)
-                {
-                    DBPRINTF("  Error: Can't open UDP client socket\n");
-                }
-
-                UDPFlush(sokt_serv);
-
-                UDPServerState = SM_LISTENING;
-                DBPRINTF("  State: Changing from HOME to LISTENING\n");
-                break;
-
-            case SM_LISTENING:
-                // See if anyone is connected to us
-                if(!UDPIsConnected(sokt_serv))
-                {
-                    DBPRINTF("  Error: Server listening, but not connected\n");
-                    UDPServerState = SM_HOME;
-                    break;
-                }
-                
-                // Read the current button press(es)
-                buttons_pressed = mPORTDRead();
-                // Check if button2 is low (pressed)
-                //     Send "Hello World"
-                if ( (buttons_pressed & BIT_7) == 0)
-                {
-                    while(UDPIsTxPutReady(sokt_client, sizeof(output)) < sizeof(output))
-                        DBPRINTF(".");
-
-                    UDPPutString(sokt_client, output);
-                    UDPFlush(sokt_client);
-                    DBPRINTF("  Sent Hello World  \r\n");
-
-                    //Wait until the button is released
-                    while ((mPORTDRead() & BIT_7) == 0);
-                }
-
-
-                // Figure out how many bytes have been received and how many we can transmit.
-                wMaxGet = UDPIsGetReady(sokt_serv);    // Get UDP RX FIFO byte count
-                wMaxPut = UDPIsTxPutReady(sokt_serv, 32);    // Get UDP TX FIFO free space
-
-                // Make sure we don't take more bytes out of the RX FIFO than we can put into the TX FIFO
-                if(wMaxPut < wMaxGet)
-                    wMaxGet = wMaxPut;
-
-                // Process all bytes that we can
-                // This is implemented as a loop, processing up to sizeof(AppBuffer) bytes at a time.
-                // This limits memory usage while maximizing performance.
-                // Single byte Gets and Puts are a lot slower than multibyte GetArrays and PutArrays.
-                wCurrentChunk = sizeof(AppBuffer);
-                for(w = 0; w < wMaxGet; w += sizeof(AppBuffer))
-                {
-                    // Make sure the last chunk, which will likely be smaller than sizeof(AppBuffer), is treated correctly.
-                    if(w + sizeof(AppBuffer) > wMaxGet)
-                        wCurrentChunk = wMaxGet - w;
-
-                    // Transfer the data out of the UDP RX FIFO and into our local processing buffer.
-                    UDPGetArray(sokt_serv, AppBuffer, wCurrentChunk);
-
-                    // Perform the "ToUpper" operation on each data byte
-                    for(w2 = 0; w2 < wCurrentChunk; w2++)
-                    {
-                        i = AppBuffer[w2];
-                        if(i == '\e')   //escape
-                        {
-                            sokt_serv = SM_CLOSING;
-                            DBPRINTF("  State: Changing from LISTENING to CLOSING\n");
-                        }
-                    }
-
-                    DBPRINTF(AppBuffer);
-                    DBPRINTF("\n");
-
-                    // Transfer the data out of our local processing buffer and into the UDP TX FIFO.
-                    UDPPutArray(sokt_serv, AppBuffer, wCurrentChunk);
-                }
-
-                // No need to perform any flush.  TCP data in TX FIFO will automatically
-                // transmit itself after it accumulates for a while.  If you want to
-                // decrease latency (at the expense of wasting network bandwidth on TCP
-                // overhead), perform and explicit flush via the TCPFlush() API.
-                break;
-
-            case SM_CLOSING:
-                // Close the socket connection.
-                UDPClose(sokt_serv);
-
-                UDPServerState = SM_HOME;
-                DBPRINTF("  State: Changing from CLOSING to HOME\n");
-                break;
-
-            default:
-                UDPServerState = SM_HOME;
-                DBPRINTF("  State: Changing from unknown to HOME\n");
-                break;
-            }
-
-        }
+        DoTheThing(netH);
 
 #if defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
         if (stackNotifyCnt)
@@ -450,7 +300,6 @@ int main(void)
             ProcessNotification(stackNotifyHandle);
         }
 #endif  // defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
-
     }
 }
 
@@ -536,5 +385,290 @@ void ICMPv6Callback(TCPIP_NET_HANDLE hNetIf, uint8_t type, IPV6_ADDR * localIP, 
 }
 #endif
 
+int DoTheThing(TCPIP_NET_HANDLE netH)
+{
+//
+// Lab 05 Start
+//
+    int buttons_pressed;
 
+    uint8_t i, j;
+    uint16_t w, w2;
+    uint8_t AppBuffer[512];
+    uint16_t wMaxGet, wMaxPut, wCurrentChunk;
 
+    static UDP_SOCKET sokt_serv;
+    static UDP_SOCKET sokt_client;
+
+    UDPSocketSetNet(sokt_serv, netH);
+    UDPSetOptions(sokt_serv, UDP_OPTION_STRICT_NET, (void*)true);
+    UDPSocketSetNet(sokt_client, netH);
+    UDPSetOptions(sokt_client, UDP_OPTION_STRICT_NET, (void*)true);
+
+    for(j = 0; j < 255; j++)
+    {
+        switch(UDPServerState)
+        {
+        case SM_HOME:
+            // Allocate a socket for this server to listen and accept connections on
+            sokt_serv = UDPOpenServer(IP_ADDRESS_TYPE_IPV4, port, NULL);
+            if(sokt_serv == INVALID_SOCKET)
+            {
+                DBPRINTF("  Error: Can't open UDP server socket\n");
+            }
+            sokt_client = UDPOpenClient(IP_ADDRESS_TYPE_IPV4, port, (IP_MULTI_ADDRESS*)&remoteAddress);
+            if(sokt_client == INVALID_SOCKET)
+            {
+                DBPRINTF("  Error: Can't open UDP client socket\n");
+            }
+
+            UDPFlush(sokt_serv);
+
+            UDPServerState = SM_LISTENING;
+            DBPRINTF("  State: Changing from HOME to LISTENING\n");
+
+            DBPRINTF("      Destination IP: '%i.%i.%i.%i'\r\n", remoteAddress.v[0],
+                remoteAddress.v[1], remoteAddress.v[2], remoteAddress.v[3]);
+
+            DBPRINTF("      Output port: '%i'\r\n", port);
+
+            DBPRINTF("      Output message: '");
+            DBPRINTF((char*)outputMessage);
+            DBPRINTF("'\r\n");
+            break;
+
+        case SM_LISTENING:
+            // See if anyone is connected to us
+            if(!UDPIsConnected(sokt_serv))
+            {
+                DBPRINTF("  Error: Server listening, but not connected\n");
+                UDPServerState = SM_HOME;
+                break;
+            }
+
+            // Read the current button press(es)
+            buttons_pressed = mPORTDRead();
+            // Check if button1 is low (pressed)
+            //     Send "Hello world" message
+            if ( (buttons_pressed & BIT_6) == 0)
+            {
+                static char helloWorld[] = "Hello world";
+
+                DBPRINTF("  bit 6");
+                while(UDPIsTxPutReady(sokt_client, sizeof(helloWorld)) < sizeof(helloWorld))
+                    DBPRINTF(".");
+
+                UDPPutString(sokt_client, (uint8_t*)helloWorld);
+                UDPFlush(sokt_client);
+                DBPRINTF("  Sent default message '");
+                DBPRINTF(helloWorld);
+                DBPRINTF("'\r\n");
+
+                //Wait until the button is released
+                while ((mPORTDRead() & BIT_6) == 0);
+            }
+            // Check if button2 is low (pressed)
+            //     Send "Hello World"
+            if ( (buttons_pressed & BIT_7) == 0)
+            {
+                char tempMessage[256] = "";
+                DBPRINTF("Message to Send (128 chars max): ");
+                DBGETS((uint8_t*)tempMessage, 128);
+                DBPRINTF("\n");
+                
+                while(UDPIsTxPutReady(sokt_client, sizeof(tempMessage)) < sizeof(tempMessage))
+                    DBPRINTF(".");
+
+                UDPPutString(sokt_client, (uint8_t*)tempMessage);
+                UDPFlush(sokt_client);
+                DBPRINTF("  Sent custom basic message '");
+                DBPRINTF(tempMessage);
+                DBPRINTF("'\r\n");
+
+                //Wait until the button is released
+                while ((mPORTDRead() & BIT_7) == 0);
+            }
+            // Check if button3 is low (pressed)
+            //     Send custom message
+            if ( (buttons_pressed & BIT_13) == 0)
+            {
+                DBPRINTF("  Button 3 pressed (BIT_13)\r\n");
+                while(UDPIsTxPutReady(sokt_client, sizeof(outputMessage)) < sizeof(outputMessage))
+                    DBPRINTF(".");
+
+                UDPPutString(sokt_client, outputMessage);
+                UDPFlush(sokt_client);
+                DBPRINTF("  Sent custom message '");
+                DBPRINTF((char*)outputMessage);
+                DBPRINTF("'\r\n");
+
+                //Wait until the button is released
+                while ((mPORTDRead() & BIT_13) == 0);
+            }
+
+            // Figure out how many bytes have been received and how many we can transmit.
+            wMaxGet = UDPIsGetReady(sokt_serv);    // Get UDP RX FIFO byte count
+            wMaxPut = UDPIsTxPutReady(sokt_serv, 32);    // Get UDP TX FIFO free space
+
+            // Make sure we don't take more bytes out of the RX FIFO than we can put into the TX FIFO
+            if(wMaxPut < wMaxGet)
+            {
+                wMaxGet = wMaxPut;
+            }
+
+            // Process all bytes that we can
+            // This is implemented as a loop, processing up to sizeof(AppBuffer) bytes at a time.
+            // This limits memory usage while maximizing performance.
+            // Single byte Gets and Puts are a lot slower than multibyte GetArrays and PutArrays.
+            wCurrentChunk = sizeof(AppBuffer);
+            for(w = 0; w < wMaxGet; w += sizeof(AppBuffer))
+            {
+                // Make sure the last chunk, which will likely be smaller than sizeof(AppBuffer), is treated correctly.
+                if(w + sizeof(AppBuffer) > wMaxGet)
+                    wCurrentChunk = wMaxGet - w;
+
+                // Transfer the data out of the UDP RX FIFO and into our local processing buffer.
+                UDPGetArray(sokt_serv, AppBuffer, wCurrentChunk);
+
+                // Perform the "ToUpper" operation on each data byte
+                for(w2 = 0; w2 < wCurrentChunk; w2++)
+                {
+                    i = AppBuffer[w2];
+                    if(i == '\e')   //escape
+                    {
+                        sokt_serv = SM_CLOSING;
+                        DBPRINTF("  State: Changing from LISTENING to CLOSING\n");
+                    }
+                }
+
+                DBPRINTF((char*)AppBuffer);
+                DBPRINTF("\n");
+
+                // Transfer the data out of our local processing buffer and into the UDP TX FIFO.
+                UDPPutArray(sokt_serv, AppBuffer, wCurrentChunk);
+            }
+
+            // No need to perform any flush.  TCP data in TX FIFO will automatically
+            // transmit itself after it accumulates for a while.  If you want to
+            // decrease latency (at the expense of wasting network bandwidth on TCP
+            // overhead), perform and explicit flush via the TCPFlush() API.
+            break;
+
+        case SM_CLOSING:
+            // Close the socket connection.
+            UDPClose(sokt_serv);
+
+            UDPServerState = SM_HOME;
+            DBPRINTF("  State: Changing from CLOSING to HOME\n");
+            break;
+
+        default:
+            UDPServerState = SM_HOME;
+            DBPRINTF("  State: Changing from unknown to HOME\n");
+            break;
+        }
+    }
+    return 0;
+}
+
+// Setter used by the web interface
+int SetDestinationAddressFromString(char* addressIn)
+{
+    char octetS1[4] = "000";     // Most significant octet
+    char octetS2[4] = "000";
+    char octetS3[4] = "000";
+    char octetS4[4] = "000";     // Least significant octet
+
+    int octet1 = 0;
+    int octet2 = 0;
+    int octet3 = 0;
+    int octet4 = 0;
+
+    if(strlen(addressIn) != 15)
+    {
+        return 1;
+    }
+    else
+    {
+        octetS1[0] = addressIn[0];
+        octetS1[1] = addressIn[1];
+        octetS1[2] = addressIn[2];
+        octetS1[3] = 0;
+
+        octetS2[0] = addressIn[4];
+        octetS2[1] = addressIn[5];
+        octetS2[2] = addressIn[6];
+        octetS2[3] = 0;
+
+        octetS3[0] = addressIn[8];
+        octetS3[1] = addressIn[9];
+        octetS3[2] = addressIn[10];
+        octetS3[3] = 0;
+
+        octetS4[0] = addressIn[12];
+        octetS4[1] = addressIn[13];
+        octetS4[2] = addressIn[14];
+        octetS4[3] = 0;
+
+        octet1 = strtol(octetS1, NULL, 10);
+        octet2 = strtol(octetS2, NULL, 10);
+        octet3 = strtol(octetS3, NULL, 10);
+        octet4 = strtol(octetS4, NULL, 10);
+
+        // Most significant octet
+        remoteAddress.v[0] = octet1;
+        remoteAddress.v[1] = octet2;
+        remoteAddress.v[2] = octet3;
+        // Least significant octet
+        remoteAddress.v[3] = octet4;
+
+        DBPRINTF("New remote address is: %i.%i.%i.%i", octet1, octet2, octet3, octet4);
+        DBPRINTF("\n");
+        DBPRINTF("Resetting UDP server state\n");
+
+        UDPServerState = SM_HOME;
+    }
+    return 0;
+}
+
+// Getter used by the web interface
+void GetDestinationAddress(char* buffer)
+{
+    sprintf((char*)buffer, "%03d.%03d.%03d.%03d", remoteAddress.v[0], remoteAddress.v[1], remoteAddress.v[2], remoteAddress.v[3]);
+}
+
+// Setter used by the web interface
+int SetPortFromString(char* portIn)
+{
+    port = strtol(portIn, NULL, 10);
+
+    DBPRINTF("New port is: %i", port);
+    DBPRINTF("\n");
+    DBPRINTF("Resetting UDP server state\n");
+
+    UDPServerState = SM_HOME;
+    return 0;
+}
+
+// Getter used by the web interface
+void GetPort(char* buffer)
+{
+    sprintf((char*)buffer, "%d", port);
+}
+
+// Setter used by the web interface
+int SetMessageToSend(char* messageIn)
+{
+    strcpy((char*)outputMessage, messageIn);
+
+    DBPRINTF("New message is: %s", (char*)outputMessage);
+    DBPRINTF("\n");
+
+    return strcmp((char*)outputMessage, messageIn);
+}
+
+// Getter used by the web interface
+void GetMessage(char* buffer)
+{
+    strcpy(buffer, (char*)outputMessage);
+}

@@ -42,10 +42,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // TCPIP Stack Module Selection
 //   Uncomment or comment the following lines to enable or
 //   disabled the following high-level application modules.
-
 #define TCPIP_STACK_USE_IPV4                // enable IPv4 functionality
 #define TCPIP_STACK_USE_ICMP_SERVER         // Ping query and response capability
-//#define TCPIP_STACK_USE_HTTP2_SERVER        // New HTTP server with POST, Cookies, Authentication, etc.
+#define TCPIP_STACK_USE_HTTP2_SERVER        // New HTTP server with POST, Cookies, Authentication, etc.
 //#define TCPIP_STACK_USE_SSL_SERVER        // SSL server socket support
 //#define TCPIP_STACK_USE_SSL_CLIENT        // SSL client socket support
 #define TCPIP_STACK_USE_DHCP_CLIENT         // Dynamic Host Configuration Protocol client for obtaining IP address and other parameters
