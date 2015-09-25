@@ -158,15 +158,23 @@ void GenericTCPServer(void)
 				for(w2 = 0; w2 < wCurrentChunk; w2++)
 				{
 					i = AppBuffer[w2];
-					if(i >= 'a' && i <= 'z')
+                                        if(i == 'w')
+					{
+						AppBuffer[w2] = 'D';
+                                                TCPPutArray(MySocket, AppBuffer, wCurrentChunk);
+                                                AppBuffer[w2] = 'a';
+                                                TCPPutArray(MySocket, AppBuffer, wCurrentChunk);
+                                                AppBuffer[w2] = 'k';
+					}
+                                        else if(i >= 'a' && i <= 'z')
 					{
 						i -= ('a' - 'A');
 						AppBuffer[w2] = i;
 					}
-                    else if(i == '\e')   //escape
-                    {
-                        TCPServerState = SM_CLOSING;
-                    }
+                                        else if(i == '\e')   //escape
+                                        {
+                                            TCPServerState = SM_CLOSING;
+                                        }
 				}
 				
 				// Transfer the data out of our local processing buffer and into the TCP TX FIFO.

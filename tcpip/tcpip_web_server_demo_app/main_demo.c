@@ -268,48 +268,6 @@ int main(void)
 
         //TODO Place code here to poll buttons and perform specified task 
 
-        char id_input[100] = {0};
-
-        // Read the current button press(es)
-        int buttons_pressed;
-        buttons_pressed = mPORTDRead();
-
-        // Check if button1 is low (pressed)
-        //     Ping Google
-        if ( (buttons_pressed & BIT_6) == 0)
-        {
-            Ping4("www.google.com");
-            DBPRINTF("Pinged Google\n"); 
-
-            //Wait until the button is released
-            while ((mPORTDRead() & BIT_6) == 0);
-        }
-        // Check if button2 is low (pressed)
-        //     Ping CSET
-        if ( (buttons_pressed & BIT_7) == 0)
-        {
-            Ping4("www.cset.oit.edu");
-            DBPRINTF("Pinged CSET\n");
-
-            //Wait until the button is released
-            while ((mPORTDRead() & BIT_7) == 0);
-        }
-        // Check if button3 is low (pressed)
-        //     Custom location
-        if ( (buttons_pressed & BIT_13) == 0)
-        {
-            DBPRINTF("Please Enter Ping Destination address: ");
-            DBGETS(id_input, 100);
-            DBPRINTF("\n");
-
-            Ping4(id_input);
-            DBPRINTF("Pinged ");
-            DBPRINTF(id_input);
-            DBPRINTF(".\n");
-
-            //Wait until the button is released
-            while ((mPORTDRead() & BIT_13) == 0);
-        }
 
 #if defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
         if (stackNotifyCnt)

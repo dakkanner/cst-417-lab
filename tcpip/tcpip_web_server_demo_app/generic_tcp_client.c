@@ -110,22 +110,26 @@ void GenericTCPClient(void)
         SM_DONE
     } GenericTCPExampleState = SM_DONE;
 
+    //DBPRINTF("    Starting TCP client\n");
+
     switch(GenericTCPExampleState)
     {
 
         case SM_HOME:
 
+            DBPRINTF("  SM_HOME\n");
             netH = TCPIP_STACK_GetDefaultNet();
             if(DNSBeginUsage(netH) != DNS_RES_OK)
             {
                 break;
             }
-            DNSResolve(ServerName, DNS_TYPE_A);
+            DNSResolve(ServerName, DNS_TYPE_A); 
             GenericTCPExampleState++;
             break;
 
         case SM_WAIT_DNS:
 
+            DBPRINTF("  SM_WAIT_DNS\n");
             dnsRes = DNSIsResolved(ServerName, &serverIP);
             if(dnsRes == DNS_RES_PENDING)
             {   // ongoing operation;
@@ -133,7 +137,7 @@ void GenericTCPClient(void)
             }
             else if(dnsRes < 0)
             {   // some DNS error occurred; retry
-                SYS_CONSOLE_MESSAGE((const char*)"\r\n\r\nGeneric TCP client: DNS name resolving failed...\r\n");
+                DBPRINTF((const char*)"\r\n\r\nGeneric TCP client: DNS name resolving failed...\r\n");
                 TCPClose(MySocket);
                 MySocket = INVALID_SOCKET;
                 GenericTCPExampleState = SM_HOME;
@@ -153,6 +157,7 @@ void GenericTCPClient(void)
             break;
 
         case SM_DNS_RESOLVED:
+            DBPRINTF("  SM_DNS_RESOLVED\n");
             // Connect the socket to the remote TCP server
             MySocket = TCPOpenClient(IP_ADDRESS_TYPE_IPV4, ServerPort, (IP_MULTI_ADDRESS*)&serverIP);
 
@@ -169,6 +174,7 @@ void GenericTCPClient(void)
 
         case SM_SOCKET_OBTAINED:
 
+            DBPRINTF("  SM_SOCKET_OBTAINED\n");
             // Wait for the remote server to accept our connection request
             if(!TCPIsConnected(MySocket))
             {
@@ -179,7 +185,7 @@ void GenericTCPClient(void)
                     TCPClose(MySocket);
                     MySocket = INVALID_SOCKET;
                     GenericTCPExampleState--;
-                    SYS_CONSOLE_MESSAGE((const char*)"\r\n\r\nGeneric TCP client: Failed connecting to the remote server...\r\n");
+                    DBPRINTF((const char*)"\r\n\r\nGeneric TCP client: Failed connecting to the remote server...\r\n");
                 }
                 break;
             }
@@ -203,6 +209,7 @@ void GenericTCPClient(void)
             break;
 
         case SM_PROCESS_RESPONSE:
+            //DBPRINTF("  SM_PROCESS_RESPONSE\n");
             // Check to see if the remote node has disconnected from us or sent us any application data
             // If application data is available, write it to the UART
             if(!TCPIsConnected(MySocket))
@@ -226,7 +233,7 @@ void GenericTCPClient(void)
                 }
                 w -= TCPGetArray(MySocket, vBuffer, i);
 #if defined(GENERIC_TCP_CLIENT_ENABLE_UART_DUMP)
-                SYS_CONSOLE_MESSAGE((char*)vBuffer);
+                DBPRINTF((char*)vBuffer);
 #endif
                 // SYS_CONSOLE_MESSAGE is a blocking call which will slow down the rest of the stack
                 // if we shovel the whole TCP RX FIFO into the serial port all at once.
@@ -240,6 +247,7 @@ void GenericTCPClient(void)
             break;
 
         case SM_DISCONNECT:
+            DBPRINTF("  SM_DISCONNECT\n");
             // Close the socket so it can be used by other modules
             // For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
             TCPClose(MySocket);
@@ -248,6 +256,7 @@ void GenericTCPClient(void)
             break;
 
         case SM_DONE:
+            //DBPRINTF("  SM_DONE\n");
             // Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
             // On many boards, SYS_USERIO_BUTTON_0 is assigned to sw1
             // SYS_USERIO_BUTTON_1=sw2 and SYS_USERIO_BUTTON_2=sw3

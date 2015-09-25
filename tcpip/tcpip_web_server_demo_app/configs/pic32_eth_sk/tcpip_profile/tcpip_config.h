@@ -51,7 +51,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define TCPIP_STACK_USE_DHCP_CLIENT         // Dynamic Host Configuration Protocol client for obtaining IP address and other parameters
 //#define TCPIP_STACK_USE_SMTP_CLIENT       // Simple Mail Transfer Protocol for sending email
 //#define TCPIP_STACK_USE_TELNET_SERVER     // Telnet server
-//#define TCPIP_STACK_USE_ANNOUNCE          // Microchip Embedded Ethernet Device Discoverer server/client
+#define TCPIP_STACK_USE_ANNOUNCE          // Microchip Embedded Ethernet Device Discoverer server/client
 #define TCPIP_STACK_USE_DNS                 // Domain Name Service Client for resolving hostname strings to IP addresses
 #define TCPIP_STACK_USE_NBNS              // NetBIOS Name Service Server for repsonding to NBNS hostname broadcast queries
 //#define TCPIP_STACK_USE_REBOOT_SERVER     // Module for resetting this PIC remotely.  Primarily useful for a Bootloader.
