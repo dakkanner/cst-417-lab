@@ -281,11 +281,6 @@ int main(void)
             Ping4("www.google.com");
             DBPRINTF("Pinged Google\n"); 
 
-//            if(Ping4("www.google.com"))
-//                DBPRINTF("Pinged Google\n");
-//            else
-//                DBPRINTF("Failed to ping Google\n");
-
             //Wait until the button is released
             while ((mPORTDRead() & BIT_6) == 0);
         }
@@ -295,12 +290,6 @@ int main(void)
         {
             Ping4("www.cset.oit.edu");
             DBPRINTF("Pinged CSET\n");
-
-            // Ping4 doesn't actually return a different value if it failed
-            //if (Ping4("www.cset.oit.edu"))
-            //    DBPRINTF("Pinged CSET\n");
-            //else
-            //    DBPRINTF("Failed to ping CSET\n");
 
             //Wait until the button is released
             while ((mPORTDRead() & BIT_7) == 0);
@@ -318,29 +307,9 @@ int main(void)
             DBPRINTF(id_input);
             DBPRINTF(".\n");
 
-//            if( Ping4(id_input) )
-//            {
-//                DBPRINTF("Pinged ");
-//                DBPRINTF(id_input);
-//                DBPRINTF(".\n");
-//            }
-//            else
-//            {
-//                DBPRINTF("Failed to ping ");
-//                DBPRINTF(id_input);
-//                DBPRINTF(".\n");
-//            }
-
             //Wait until the button is released
             while ((mPORTDRead() & BIT_13) == 0);
         }
-        else
-        {
-            //DBPRINTF("NA \n");
-        }
-
-
-
 
 #if defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
         if (stackNotifyCnt)
