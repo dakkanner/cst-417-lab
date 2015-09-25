@@ -45,31 +45,31 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define TCPIP_STACK_USE_IPV4                // enable IPv4 functionality
 #define TCPIP_STACK_USE_ICMP_SERVER         // Ping query and response capability
-#define TCPIP_STACK_USE_HTTP2_SERVER        // New HTTP server with POST, Cookies, Authentication, etc.
-#define TCPIP_STACK_USE_SSL_SERVER        // SSL server socket support 
-#define TCPIP_STACK_USE_SSL_CLIENT        // SSL client socket support 
+//#define TCPIP_STACK_USE_HTTP2_SERVER        // New HTTP server with POST, Cookies, Authentication, etc.
+//#define TCPIP_STACK_USE_SSL_SERVER        // SSL server socket support
+//#define TCPIP_STACK_USE_SSL_CLIENT        // SSL client socket support
 #define TCPIP_STACK_USE_DHCP_CLIENT         // Dynamic Host Configuration Protocol client for obtaining IP address and other parameters
 //#define TCPIP_STACK_USE_SMTP_CLIENT       // Simple Mail Transfer Protocol for sending email
-#define TCPIP_STACK_USE_TELNET_SERVER     // Telnet server
-#define TCPIP_STACK_USE_ANNOUNCE          // Microchip Embedded Ethernet Device Discoverer server/client
+//#define TCPIP_STACK_USE_TELNET_SERVER     // Telnet server
+//#define TCPIP_STACK_USE_ANNOUNCE          // Microchip Embedded Ethernet Device Discoverer server/client
 #define TCPIP_STACK_USE_DNS                 // Domain Name Service Client for resolving hostname strings to IP addresses
 #define TCPIP_STACK_USE_NBNS              // NetBIOS Name Service Server for repsonding to NBNS hostname broadcast queries
 //#define TCPIP_STACK_USE_REBOOT_SERVER     // Module for resetting this PIC remotely.  Primarily useful for a Bootloader.
 #define TCPIP_STACK_USE_SNTP_CLIENT         // Simple Network Time Protocol for obtaining current date/time from Internet
 //#define TCPIP_STACK_USE_DYNAMICDNS_CLIENT // Dynamic DNS client updater module
 //#define TCPIP_STACK_USE_BERKELEY_API      // Berekely Sockets APIs are available
-#define TCPIP_STACK_USE_IPV6              // enable IPv6 functionality
+//#define TCPIP_STACK_USE_IPV6              // enable IPv6 functionality
 #define TCPIP_STACK_USE_TCP                 // Enable the TCP module
 #define TCPIP_STACK_USE_UDP                 // Enable the UDP module
-#define TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL		// Zeroconf IPv4 Link-Local Addressing; 
-#define TCPIP_STACK_USE_ZEROCONF_MDNS_SD		// Zeroconf mDNS and mDNS service discovery
+//#define TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL		// Zeroconf IPv4 Link-Local Addressing;
+//#define TCPIP_STACK_USE_ZEROCONF_MDNS_SD		// Zeroconf mDNS and mDNS service discovery
 #define TCPIP_STACK_COMMAND_ENABLE        // TCPIP_COMMANDS for network configuration or debug
 //#define TCPIP_STACK_USE_IPERF             // Enable the iperf module for standard network benchmarking
 //#define TCPIP_STACK_USE_SNMP_SERVER       // Simple Network Management Protocol v2C Community Agent
 //#define TCPIP_STACK_USE_SNMPV3_SERVER     // SNMP v3 agent
 //#define TCPIP_STACK_USE_FTP_SERVER        // File Transfer Protocol
 //#define TCPIP_STACK_USE_DHCP_SERVER         // DHCP server
-//#define TCPIP_STACK_USE_ICMP_CLIENT         // Ping transmission capability
+#define TCPIP_STACK_USE_ICMP_CLIENT         // Ping transmission capability
 
 // =======================================================================
 //   NOT PORTED/TESTED. DO NOT ENABLE!
@@ -120,11 +120,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // =======================================================================
 //   Event Notifications Options
 // =======================================================================
-#define TCPIP_STACK_USE_EVENT_NOTIFICATION
-
-    // The default interrupt priority to use for the TCPIP interrupts
-   #define   TCPIP_EVENT_IPL         5
-   #define   TCPIP_EVENT_SIPL      1
+//#define TCPIP_STACK_USE_EVENT_NOTIFICATION
+//
+//    // The default interrupt priority to use for the TCPIP interrupts
+//   #define   TCPIP_EVENT_IPL         5
+//   #define   TCPIP_EVENT_SIPL      1
 
 
 #endif  // __TCPIP_CONFIG_H_

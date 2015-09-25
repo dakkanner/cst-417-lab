@@ -28,7 +28,7 @@ MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
 IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
 CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
 OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
-INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
+7INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
 CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
 SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
@@ -91,6 +91,7 @@ int main(void)
                                                        // the last digit will be incremented by interface
 #endif  // defined (TCPIP_STACK_USE_ZEROCONF_MDNS_SD)
 
+    DBINIT();
 
     // perform system initialization
     if(!SYS_Initialize())
@@ -98,10 +99,12 @@ int main(void)
         return 0;
     }
 
-
-    SYS_CONSOLE_MESSAGE("\r\n\n\n ---  TCPIP Demo Starts!  --- \r\n");
-    SYS_OUT_MESSAGE("TCPIPStack " TCPIP_STACK_VERSION "  ""                ");
-
+    
+    DBPRINTF("---  Lab 2 Starts!  ---\n");
+    DBPRINTF("TCPIPStack Version: ");
+    DBPRINTF((const void*)TCPIP_STACK_VERSION);
+    DBPRINTF("\n");
+    
     // Initialize the TCPIP stack
     if (!TCPIP_STACK_Init(TCPIP_HOSTS_CONFIGURATION, sizeof (TCPIP_HOSTS_CONFIGURATION) / sizeof (*TCPIP_HOSTS_CONFIGURATION),
             TCPIP_STACK_MODULE_CONFIG_TBL, sizeof (TCPIP_STACK_MODULE_CONFIG_TBL) / sizeof (*TCPIP_STACK_MODULE_CONFIG_TBL)))
@@ -119,9 +122,9 @@ int main(void)
         netBiosName = TCPIP_STACK_NetBIOSName(netH);
 
 #if defined(TCPIP_STACK_USE_NBNS)
-        SYS_CONSOLE_PRINT("    Interface %s on host %s - NBNS enabled\r\n", netName, netBiosName);
+        DBPRINTF("    Interface %s on host %s - NBNS enabled\r\n", netName, netBiosName);
 #else
-        SYS_CONSOLE_PRINT("    Interface %s on host %s - NBNS disabled\r\n", netName, netBiosName);
+        DBPRINTF("    Interface %s on host %s - NBNS disabled\r\n", netName, netBiosName);
 #endif  // defined(TCPIP_STACK_USE_NBNS)
     
     
@@ -257,11 +260,87 @@ int main(void)
             {
                 dwLastIP[i].Val = TCPIP_STACK_NetAddress(netH);
 
-                SYS_CONSOLE_PRINT("Interface Name is: %s\r\n", TCPIP_HOSTS_CONFIGURATION[i].interface);
-                SYS_CONSOLE_MESSAGE("New IP Address is: "); DisplayIPValue(dwLastIP[i]);
-                SYS_CONSOLE_MESSAGE("\r\n");
+                DBPRINTF("Interface Name is: %s\r\n", TCPIP_HOSTS_CONFIGURATION[i].interface);
+                DBPRINTF("New IP Address is: "); DisplayIPValue(dwLastIP[i]);
+                DBPRINTF("\r\n");
             }
         }
+
+        //TODO Place code here to poll buttons and perform specified task 
+
+        char id_input[100] = {0};
+
+        // Read the current button press(es)
+        int buttons_pressed;
+        buttons_pressed = mPORTDRead();
+
+        // Check if button1 is low (pressed)
+        //     Ping Google
+        if ( (buttons_pressed & BIT_6) == 0)
+        {
+            Ping4("www.google.com");
+            DBPRINTF("Pinged Google\n"); 
+
+//            if(Ping4("www.google.com"))
+//                DBPRINTF("Pinged Google\n");
+//            else
+//                DBPRINTF("Failed to ping Google\n");
+
+            //Wait until the button is released
+            while ((mPORTDRead() & BIT_6) == 0);
+        }
+        // Check if button2 is low (pressed)
+        //     Ping CSET
+        if ( (buttons_pressed & BIT_7) == 0)
+        {
+            Ping4("www.cset.oit.edu");
+            DBPRINTF("Pinged CSET\n");
+
+            // Ping4 doesn't actually return a different value if it failed
+            //if (Ping4("www.cset.oit.edu"))
+            //    DBPRINTF("Pinged CSET\n");
+            //else
+            //    DBPRINTF("Failed to ping CSET\n");
+
+            //Wait until the button is released
+            while ((mPORTDRead() & BIT_7) == 0);
+        }
+        // Check if button3 is low (pressed)
+        //     Custom location
+        if ( (buttons_pressed & BIT_13) == 0)
+        {
+            DBPRINTF("Please Enter Ping Destination address: ");
+            DBGETS(id_input, 100);
+            DBPRINTF("\n");
+
+            Ping4(id_input);
+            DBPRINTF("Pinged ");
+            DBPRINTF(id_input);
+            DBPRINTF(".\n");
+
+//            if( Ping4(id_input) )
+//            {
+//                DBPRINTF("Pinged ");
+//                DBPRINTF(id_input);
+//                DBPRINTF(".\n");
+//            }
+//            else
+//            {
+//                DBPRINTF("Failed to ping ");
+//                DBPRINTF(id_input);
+//                DBPRINTF(".\n");
+//            }
+
+            //Wait until the button is released
+            while ((mPORTDRead() & BIT_13) == 0);
+        }
+        else
+        {
+            //DBPRINTF("NA \n");
+        }
+
+
+
 
 #if defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
         if (stackNotifyCnt)
@@ -273,6 +352,7 @@ int main(void)
 
     }
 }
+
 
 // Writes an IP address to the LCD display and the UART as available
 void DisplayIPValue(IPV4_ADDR IPVal)
@@ -299,7 +379,7 @@ void DisplayIPValue(IPV4_ADDR IPVal)
         }
     }
     SYS_OUT_MESSAGE_LINE(message, 1);
-    SYS_CONSOLE_MESSAGE((char *) message);
+    DBPRINTF((char *) message);
 }
 
 #if defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)

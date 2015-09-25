@@ -113,6 +113,7 @@
         <itemPath>../configs/pic32_eth_sk/tcpip_profile/udp_config.h</itemPath>
       </logicalFolder>
       <itemPath>../main_demo.h</itemPath>
+      <itemPath>build/db_utils.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -297,6 +298,7 @@
         <property key="extra-include-directories"
                   value="../configs/pic32_eth_sk/tcpip_profile;../configs/pic32_eth_sk/bsp_profile;..;../../../microchip/include;../../../microchip/tcpip"/>
         <property key="generate-16-bit-code" value="false"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
         <property key="optimization-level" value=""/>
@@ -307,42 +309,55 @@
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="use-cci" value="false"/>
+        <property key="use-iar" value="false"/>
         <property key="use-indirect-calls" value="false"/>
         <appendMe value="-G 64"/>
       </C32>
+      <C32-AR>
+        <property key="additional-options-chop-files" value="false"/>
+      </C32-AR>
       <C32-AS>
         <property key="assembler-symbols" value=""/>
         <property key="enable-symbols" value="true"/>
         <property key="exclude-floating-point-library" value="false"/>
         <property key="expand-macros" value="false"/>
-        <property key="extra-include-directories-for-assembler" value="..;"/>
+        <property key="extra-include-directories-for-assembler" value=".."/>
         <property key="extra-include-directories-for-preprocessor"
-                  value="../configs/pic32_eth_sk/tcpip_profile;../configs/pic32_eth_sk/bsp_profile;..;../../../microchip/include;../../../microchip/tcpip;../../../microchip/include/tcpip;../../../microchip/include/common;../../../microchip/include/system;../../../microchip/include/system/drivers;../../../microchip/include/system/fs;"/>
+                  value="../configs/pic32_eth_sk/tcpip_profile;../configs/pic32_eth_sk/bsp_profile;..;../../../microchip/include;../../../microchip/tcpip;../../../microchip/include/tcpip;../../../microchip/include/common;../../../microchip/include/system;../../../microchip/include/system/drivers;../../../microchip/include/system/fs"/>
         <property key="false-conditionals" value="false"/>
         <property key="keep-locals" value="false"/>
         <property key="list-assembly" value="false"/>
-        <property key="list-file" value=""/>
-        <property key="list-section-info" value="false"/>
         <property key="list-source" value="false"/>
         <property key="list-symbols" value="false"/>
+        <property key="oXC32asm-list-to-file" value="false"/>
         <property key="omit-debug-dirs" value="false"/>
         <property key="omit-forms" value="false"/>
         <property key="preprocessor-macros" value="PIC32_ESK_MEB_ETH_WIFI"/>
         <property key="warning-level" value=""/>
       </C32-AS>
       <C32-LD>
+        <property key="additional-options-use-response-files" value="false"/>
         <property key="enable-check-sections" value="false"/>
         <property key="exclude-floating-point-library" value="false"/>
         <property key="exclude-standard-libraries" value="false"/>
         <property key="extra-lib-directories" value=".."/>
+        <property key="fill-flash-options-addr" value=""/>
+        <property key="fill-flash-options-const" value=""/>
+        <property key="fill-flash-options-how" value="0"/>
+        <property key="fill-flash-options-inc-const" value="1"/>
+        <property key="fill-flash-options-increment" value=""/>
+        <property key="fill-flash-options-seq" value=""/>
+        <property key="fill-flash-options-what" value="0"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="heap-size" value="44960"/>
         <property key="input-libraries" value=""/>
         <property key="linker-symbols" value=""/>
         <property key="map-file"
                   value="&quot;${DISTDIR}/tcpip_pic32_esk_web_server_demo_app.X.${IMAGE_TYPE}.map&quot;"/>
         <property key="no-startup-files" value="false"/>
+        <property key="oXC32ld-extra-opts" value=""/>
         <property key="optimization-level" value=""/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="false"/>
@@ -365,6 +380,7 @@
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="generate-16-bit-code" value="false"/>
+        <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
         <property key="make-warnings-into-errors" value="false"/>
         <property key="optimization-level" value=""/>
@@ -379,8 +395,16 @@
         <property key="use-indirect-calls" value="false"/>
       </C32CPP>
       <C32Global>
+        <property key="common-include-directories" value=""/>
+        <property key="gp-relative-option" value=""/>
         <property key="legacy-libc" value="false"/>
+        <property key="relaxed-math" value="false"/>
+        <property key="save-temps" value="false"/>
+        <property key="wpo-lto" value="false"/>
       </C32Global>
+      <SKDEPIC32PlatformTool>
+        <property key="whatToProgram" value="all"/>
+      </SKDEPIC32PlatformTool>
     </conf>
   </confs>
 </configurationDescriptor>
