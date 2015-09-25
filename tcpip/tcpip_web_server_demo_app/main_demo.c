@@ -34,9 +34,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  *******************************************************************************/
 
-#define _SUPPRESS_PLIB_WARNING 1
-
-
 #define TCPIP_STACK_MODULE_CONFIGURATION
 #include <stdlib.h>     /* strtol */
 
@@ -87,7 +84,6 @@ static IPV4_ADDR remoteAddress;
 static int port;
 uint8_t outputMessage[512];
 
-
 //
 // Main application entry point.
 //
@@ -96,8 +92,8 @@ int main(void)
     static IPV4_ADDR dwLastIP[sizeof (TCPIP_HOSTS_CONFIGURATION) / sizeof (*TCPIP_HOSTS_CONFIGURATION)];
     int i, nNets;
 #if defined(SYS_USERIO_ENABLE)    
-    static SYS_TICK startTick = 0;
-    int32_t LEDstate=SYS_USERIO_LED_DEASSERTED;
+    //static SYS_TICK startTick = 0;
+    //int32_t LEDstate=SYS_USERIO_LED_DEASSERTED;
 #endif  // defined(SYS_USERIO_ENABLE)   
     TCPIP_NET_HANDLE netH;
     const char  *netName=0;
@@ -107,8 +103,6 @@ int main(void)
                                                        // the last digit will be incremented by interface
 #endif  // defined (TCPIP_STACK_USE_ZEROCONF_MDNS_SD)
 
-    // 192.168.0.101
-    //remoteAddress.Val = 0x6500A8C0;
     // 192.168.0.12
     remoteAddress.Val = 0x1000A8C0;
     port = 9930;
@@ -180,8 +174,6 @@ int main(void)
     }
 #endif  // defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
 
-
-
     // Now that all items are initialized, begin the co-operative
     // multitasking loop.  This infinite loop will continuously
     // execute all stack-related tasks, as well as your own
@@ -199,12 +191,12 @@ int main(void)
 
 #if defined(SYS_USERIO_ENABLE)    
         // Blink LED0 (right most one) every second.
-        if (SYS_TICK_Get() - startTick >= SYS_TICK_TicksPerSecondGet() / 2ul)
-        {
-            startTick = SYS_TICK_Get();
-            LEDstate ^= SYS_USERIO_LED_ASSERTED;
-            SYS_USERIO_SetLED(SYS_USERIO_LED_0, LEDstate);
-        }
+//        if (SYS_TICK_Get() - startTick >= SYS_TICK_TicksPerSecondGet() / 2ul)
+//        {
+//            startTick = SYS_TICK_Get();
+//            LEDstate ^= SYS_USERIO_LED_ASSERTED;
+//            SYS_USERIO_SetLED(SYS_USERIO_LED_0, LEDstate);
+//        }
 #endif  // defined(SYS_USERIO_ENABLE)   
 
         // This task performs normal stack task including checking
@@ -242,26 +234,26 @@ int main(void)
         // User should use one of the following SNMP demo
         // This routine demonstrates V1 or V2 trap formats with one variable binding.
 
-		//SNMPTrapDemo(); //This function sends the both SNMP trap version1 and 2 type of notifications
+        //SNMPTrapDemo(); //This function sends the both SNMP trap version1 and 2 type of notifications
 
-		#if defined(SNMP_STACK_USE_V2_TRAP) || defined(SNMP_V1_V2_TRAP_WITH_SNMPV3)
-		//This routine provides V2 format notifications with multiple (3) variable bindings
-		//User should modify this routine to send v2 trap format notifications with the required varbinds.
-		    SNMPV2TrapDemo(); //This function sends the SNMP trap version 2 type of notifications
-		#endif
+        #if defined(SNMP_STACK_USE_V2_TRAP) || defined(SNMP_V1_V2_TRAP_WITH_SNMPV3)
+        //This routine provides V2 format notifications with multiple (3) variable bindings
+        //User should modify this routine to send v2 trap format notifications with the required varbinds.
+            SNMPV2TrapDemo(); //This function sends the SNMP trap version 2 type of notifications
+        #endif
 
-		 /* 
-		 SNMPSendTrap() is used to send trap notification to previously configured ip address if trap notification is enabled. 
-		 There are different trap notification code. The current implementation sends trap for authentication failure (4).
-	  	 PreCondition: If application defined event occurs to send the trap. Declare a notification flag and update as the event occurs.
-	  	 Uncomment the below function if the application requires.	
+         /*
+         SNMPSendTrap() is used to send trap notification to previously configured ip address if trap notification is enabled.
+         There are different trap notification code. The current implementation sends trap for authentication failure (4).
+           PreCondition: If application defined event occurs to send the trap. Declare a notification flag and update as the event occurs.
+           Uncomment the below function if the application requires.
 
-		 if(notification flag is updated by the application as a predefined event occured)
-		{
-			SNMPSendTrap();
-		}
+         if(notification flag is updated by the application as a predefined event occured)
+        {
+            SNMPSendTrap();
+        }
 
-		*/
+        */
 
 #endif 
 
@@ -300,6 +292,7 @@ int main(void)
             ProcessNotification(stackNotifyHandle);
         }
 #endif  // defined(TCPIP_STACK_USE_EVENT_NOTIFICATION)
+
     }
 }
 
@@ -390,12 +383,20 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
 //
 // Lab 05 Start
 //
+//#define BUFLEN 512
+    //uint8_t id_input[BUFLEN] = {0};
     int buttons_pressed;
 
     uint8_t i, j;
+    int k;
     uint16_t w, w2;
     uint8_t AppBuffer[512];
+    uint8_t * AppBuffer2;
     uint16_t wMaxGet, wMaxPut, wCurrentChunk;
+
+    int Crc8Value;
+    uint8_t crcIn;
+    uint8_t crcCalculated;
 
     static UDP_SOCKET sokt_serv;
     static UDP_SOCKET sokt_client;
@@ -449,62 +450,91 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
             // Read the current button press(es)
             buttons_pressed = mPORTDRead();
             // Check if button1 is low (pressed)
-            //     Send "Hello world" message
+            //     Send "LED_01_TOG" message
             if ( (buttons_pressed & BIT_6) == 0)
             {
-                static char helloWorld[] = "Hello world";
-
-                DBPRINTF("  bit 6");
-                while(UDPIsTxPutReady(sokt_client, sizeof(helloWorld)) < sizeof(helloWorld))
-                    DBPRINTF(".");
-
-                UDPPutString(sokt_client, (uint8_t*)helloWorld);
-                UDPFlush(sokt_client);
-                DBPRINTF("  Sent default message '");
-                DBPRINTF(helloWorld);
-                DBPRINTF("'\r\n");
-
                 //Wait until the button is released
                 while ((mPORTDRead() & BIT_6) == 0);
+                
+                static char led1Toggle[] = "LED_01_TOG";
+                char sendMessage[256] = "";
+
+                //Make the first char of the message into the CRC
+                Crc8Value = FindCrc8((char*)led1Toggle, strlen((char*)led1Toggle));
+                sendMessage[0] = Crc8Value;
+                sendMessage[1] = '\0';
+                strcat(sendMessage, led1Toggle);
+
+                while(UDPIsTxPutReady(sokt_client, sizeof(sendMessage)) < sizeof(sendMessage))
+                    DBPRINTF(".");
+
+                UDPPutString(sokt_client, (uint8_t*)sendMessage);
+                UDPFlush(sokt_client);
+                DBPRINTF("  Sent message '");
+                DBPRINTF(sendMessage);
+
+                DBPRINTF("'\r\n  (CRC-8: ");
+                DBPRINTF("0x%x", Crc8Value);
+                DBPRINTF(")\r\n");
             }
             // Check if button2 is low (pressed)
-            //     Send "Hello World"
+            //     Send "LED_02_TOG" message
             if ( (buttons_pressed & BIT_7) == 0)
             {
-                char tempMessage[256] = "";
-                DBPRINTF("Message to Send (128 chars max): ");
-                DBGETS((uint8_t*)tempMessage, 128);
-                DBPRINTF("\n");
-                
-                while(UDPIsTxPutReady(sokt_client, sizeof(tempMessage)) < sizeof(tempMessage))
-                    DBPRINTF(".");
-
-                UDPPutString(sokt_client, (uint8_t*)tempMessage);
-                UDPFlush(sokt_client);
-                DBPRINTF("  Sent custom basic message '");
-                DBPRINTF(tempMessage);
-                DBPRINTF("'\r\n");
-
                 //Wait until the button is released
                 while ((mPORTDRead() & BIT_7) == 0);
-            }
-            // Check if button3 is low (pressed)
-            //     Send custom message
-            if ( (buttons_pressed & BIT_13) == 0)
-            {
-                DBPRINTF("  Button 3 pressed (BIT_13)\r\n");
-                while(UDPIsTxPutReady(sokt_client, sizeof(outputMessage)) < sizeof(outputMessage))
+
+                static char led2Toggle[] = "LED_02_TOG";
+                char sendMessage[256] = "";
+
+                //Make the first char of the message into the CRC
+                Crc8Value = FindCrc8((char*)led2Toggle, strlen((char*)led2Toggle));
+                sendMessage[0] = Crc8Value;
+                sendMessage[1] = '\0';
+                strcat(sendMessage, led2Toggle);
+                
+                while(UDPIsTxPutReady(sokt_client, sizeof(sendMessage)) < sizeof(sendMessage))
                     DBPRINTF(".");
 
-                UDPPutString(sokt_client, outputMessage);
+                UDPPutString(sokt_client, (uint8_t*)sendMessage);
                 UDPFlush(sokt_client);
-                DBPRINTF("  Sent custom message '");
-                DBPRINTF((char*)outputMessage);
-                DBPRINTF("'\r\n");
+                DBPRINTF("  Sent message '");
+                DBPRINTF(sendMessage);
 
+                DBPRINTF("'\r\n  (CRC-8: ");
+                DBPRINTF("0x%x", Crc8Value);
+                DBPRINTF(")\r\n");
+            }
+            // Check if button3 is low (pressed)
+            //     Send "LED_03_TOG" message
+            if ( (buttons_pressed & BIT_13) == 0)
+            {
                 //Wait until the button is released
                 while ((mPORTDRead() & BIT_13) == 0);
+
+                static char led2Toggle[] = "LED_03_TOG";
+                char sendMessage[256] = "";
+
+                //Make the first char of the message into the CRC
+                Crc8Value = FindCrc8((char*)led2Toggle, strlen((char*)led2Toggle));
+                sendMessage[0] = Crc8Value;
+                sendMessage[1] = '\0';
+                strcat(sendMessage, led2Toggle);
+                
+                DBPRINTF("  Button 3 pressed (BIT_13)\r\n");
+                while(UDPIsTxPutReady(sokt_client, sizeof(sendMessage)) < sizeof(sendMessage))
+                    DBPRINTF(".");
+
+                UDPPutString(sokt_client, sendMessage);
+                UDPFlush(sokt_client);
+                DBPRINTF("  Sent message '");
+                DBPRINTF((char*)sendMessage);
+
+                DBPRINTF("'\r\n  (CRC-8: ");
+                DBPRINTF("0x%x", Crc8Value);
+                DBPRINTF(")\r\n");
             }
+
 
             // Figure out how many bytes have been received and how many we can transmit.
             wMaxGet = UDPIsGetReady(sokt_serv);    // Get UDP RX FIFO byte count
@@ -512,9 +542,7 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
 
             // Make sure we don't take more bytes out of the RX FIFO than we can put into the TX FIFO
             if(wMaxPut < wMaxGet)
-            {
                 wMaxGet = wMaxPut;
-            }
 
             // Process all bytes that we can
             // This is implemented as a loop, processing up to sizeof(AppBuffer) bytes at a time.
@@ -529,6 +557,9 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
 
                 // Transfer the data out of the UDP RX FIFO and into our local processing buffer.
                 UDPGetArray(sokt_serv, AppBuffer, wCurrentChunk);
+                
+                DBPRINTF((char*)AppBuffer);
+                DBPRINTF("\n");
 
                 // Perform the "ToUpper" operation on each data byte
                 for(w2 = 0; w2 < wCurrentChunk; w2++)
@@ -541,11 +572,119 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
                     }
                 }
 
-                DBPRINTF((char*)AppBuffer);
-                DBPRINTF("\n");
+                // Set buf2 to be the string
+                AppBuffer2 = (uint8_t*)AppBuffer;
+                AppBuffer2++;
+                crcIn = (uint8_t)AppBuffer[0];
+                crcCalculated = FindCrc8(AppBuffer2, strlen((char *)AppBuffer2));
 
-                // Transfer the data out of our local processing buffer and into the UDP TX FIFO.
-                UDPPutArray(sokt_serv, AppBuffer, wCurrentChunk);
+                if(toupper(AppBuffer2[0]) == 'L' && toupper(AppBuffer2[1]) == 'E'
+                        && toupper(AppBuffer2[2]) == 'D' && AppBuffer2[3] == '_'
+                        && AppBuffer2[4] == '0')
+                {
+                    if (crcIn == crcCalculated)
+                    {
+                        printf("CRC received matches CRC expected: 0x%x vs 0x%x\n", crcIn, crcCalculated);
+                    }
+                    else
+                    {
+                        printf("Error: CRC received does not match CRC expected: 0x%x vs 0x%x\n", crcIn, crcCalculated);
+                    }
+
+                    if(AppBuffer2[5] == '1' && AppBuffer2[6] == '_')
+                    {
+                        // We're doing something to LED1
+
+                        if(toupper(AppBuffer2[7]) == 'T'
+                                && toupper(AppBuffer2[8]) == 'O'
+                                && toupper(AppBuffer2[9]) == 'G')
+                        {
+                            // Toggle LED
+                            DBPRINTF("Toggling LED1 (%s to %s)\n",
+                                    (buttons_pressed & BIT_0) ? "ENA" : "DIS",
+                                    (buttons_pressed & BIT_0) ? "DIS" : "ENA");
+                            LED0_IO = (buttons_pressed & BIT_0) ? FALSE : TRUE;
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'E'
+                                && toupper(AppBuffer2[8]) == 'N'
+                                && toupper(AppBuffer2[9]) == 'A')
+                        {
+                            // Enable LED
+                            LED0_IO = TRUE;
+                            DBPRINTF("Enabling LED1\n");
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'D'
+                                && toupper(AppBuffer2[8]) == 'I'
+                                && toupper(AppBuffer2[9]) == 'S')
+                        {
+                            // Disable LED
+                            LED0_IO = FALSE;
+                            DBPRINTF("Disabling LED1\n");
+                        }
+                    }
+                    else if(AppBuffer2[5] == '2' && AppBuffer2[6] == '_')
+                    {
+                        // We're doing something to LED2
+
+                        if(toupper(AppBuffer2[7]) == 'T'
+                                && toupper(AppBuffer2[8]) == 'O'
+                                && toupper(AppBuffer2[9]) == 'G')
+                        {
+                            // Toggle LED
+                            DBPRINTF("Toggling LED2 (%s to %s)\n",
+                                    (buttons_pressed & BIT_1) ? "ENA" : "DIS",
+                                    (buttons_pressed & BIT_1) ? "DIS" : "ENA");
+                            LED1_IO = (buttons_pressed & BIT_1) ? FALSE : TRUE;
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'E'
+                                && toupper(AppBuffer2[8]) == 'N'
+                                && toupper(AppBuffer2[9]) == 'A')
+                        {
+                            // Enable LED
+                            LED1_IO = TRUE;
+                            DBPRINTF("Enabling LED2\n");
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'D'
+                                && toupper(AppBuffer2[8]) == 'I'
+                                && toupper(AppBuffer2[9]) == 'S')
+                        {
+                            // Disable LED
+                            LED1_IO = FALSE;
+                            DBPRINTF("Disabling LED2\n");
+                        }
+                    }
+                    else if(AppBuffer2[5] == '3' && AppBuffer2[6] == '_')
+                    {
+                        // We're doing something to LED3
+
+                        if(toupper(AppBuffer2[7]) == 'T'
+                                && toupper(AppBuffer2[8]) == 'O'
+                                && toupper(AppBuffer2[9]) == 'G')
+                        {
+                            // Toggle LED
+                            DBPRINTF("Toggling LED3 (%s to %s)\n",
+                                    (buttons_pressed & BIT_2) ? "ENA" : "DIS",
+                                    (buttons_pressed & BIT_2) ? "DIS" : "ENA");
+                            LED2_IO = (buttons_pressed & BIT_2) ? FALSE : TRUE;
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'E'
+                                && toupper(AppBuffer2[8]) == 'N'
+                                && toupper(AppBuffer2[9]) == 'A')
+                        {
+                            // Enable LED
+                            LED2_IO = TRUE;
+                            DBPRINTF("Enabling LED3\n");
+                        }
+                        else if(toupper(AppBuffer2[7]) == 'D'
+                                && toupper(AppBuffer2[8]) == 'I'
+                                && toupper(AppBuffer2[9]) == 'S')
+                        {
+                            // Disable LED
+                            LED2_IO = FALSE;
+                            DBPRINTF("Disabling LED3\n");
+                        }
+                    }
+                }
             }
 
             // No need to perform any flush.  TCP data in TX FIFO will automatically
@@ -568,11 +707,18 @@ int DoTheThing(TCPIP_NET_HANDLE netH)
             break;
         }
     }
+
+    // Clear AppBuffer
+    for (k = 0; k < 511; k++)
+    {
+        AppBuffer[k] = '\0';
+    }
+
     return 0;
 }
 
 // Setter used by the web interface
-int SetDestinationAddressFromString(char* addressIn)
+int SetDestinationAddressFromString(const char* addressIn)
 {
     char octetS1[4] = "000";     // Most significant octet
     char octetS2[4] = "000";
@@ -638,7 +784,7 @@ void GetDestinationAddress(char* buffer)
 }
 
 // Setter used by the web interface
-int SetPortFromString(char* portIn)
+int SetPortFromString(const char* portIn)
 {
     port = strtol(portIn, NULL, 10);
 
@@ -657,7 +803,7 @@ void GetPort(char* buffer)
 }
 
 // Setter used by the web interface
-int SetMessageToSend(char* messageIn)
+int SetMessageToSend(const char* messageIn)
 {
     strcpy((char*)outputMessage, messageIn);
 
@@ -671,4 +817,24 @@ int SetMessageToSend(char* messageIn)
 void GetMessage(char* buffer)
 {
     strcpy(buffer, (char*)outputMessage);
+}
+
+// Get the CRC-8 value from dataIn when using x^8 + x^7 + x^2 + x + 1
+uint8_t FindCrc8(const uint8_t* dataIn, int len)
+{
+    const uint8_t* dataPtr = dataIn;
+    unsigned crc = 0;
+    int i, j;
+
+    for (i = len; i; i--, dataPtr++) {
+        crc ^= (*dataPtr << 8);
+
+        for(j = 8; j; j--) {
+            if (crc & 0x8000)
+                crc ^= (0x1870 << 3);
+            crc <<= 1;
+        }
+    }
+    
+    return (uint8_t)(crc >> 8);
 }

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab05/Microchip_TCPIP_Stack/microchip/tcpip/tcpip_manager.c</file>
-        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab05/Microchip_TCPIP_Stack/tcpip/tcpip_web_server_demo_app/main_demo.c</file>
-        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab05/Microchip_TCPIP_Stack/microchip/tcpip/ipv4.c</file>
+        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab06/Microchip_TCPIP_Stack/tcpip/tcpip_web_server_demo_app/main_demo.c</file>
+        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab06/Microchip_TCPIP_Stack/tcpip/tcpip_web_server_demo_app/main_demo.h</file>
+        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab06/Microchip_TCPIP_Stack/tcpip/tcpip_web_server_demo_app/custom_http_app.c</file>
+        <file>file:/J:/Dropbox/!School/CST%20417%20-%20Networks/Labs/Lab06/Microchip_TCPIP_Stack/microchip/tcpip/ipv4.c</file>
     </open-files>
 </project-private>

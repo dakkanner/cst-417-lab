@@ -1,0 +1,21 @@
+Dakota Kanner
+CST 417
+Lab 06
+
+This lab's custom UDP client/server protocol allows a user to control LEDs on one PIC Ethernet board from another board or other device. Destination IP and port may be set at each board's HTML interface. 
+The LED protocol messages have three major components:
+    - The first part is an 8-bit CRC-8 code which is used to validate the remainder of the message. 
+    - The second part is the LED number on the board. This board and program only supports LED_01_, LED_02_, and LED_03_. This can easily be expanded for more LEDs or even other devices.
+    - The third part is whether to enable, disable, or toggle the chosen LED on the client. If toggle, the LED current status must be read and then negated. 
+
+These messages are the form of:
+    [1-char CRC code]LED_[2-digit number]_[ENA(ble) | DIS(able) | TOG(gle)]
+
+Examples:
+    [0x29]LED_01_ENA
+    [0x2A]LED_02_DIS
+    [0x2B]LED_03_TOG
+
+Notes:
+    - CRC-8 uses size of 4 with the equation x^8 + x^7 + x^2 + x + 1 or hex code 0x187
+	- The buttons on the board can only send _TOG messages. If a more complex system is used (e.g. a computer or a board with more buttons), this can be expanded to allow access to _ENA and _DIS messages. 

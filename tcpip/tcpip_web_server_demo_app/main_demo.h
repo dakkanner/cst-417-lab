@@ -31,6 +31,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
 *******************************************************************************/
 
+#define _SUPPRESS_PLIB_WARNING 1
+
 #ifndef _MAINDEMO_H
 #define _MAINDEMO_H
 
@@ -83,9 +85,10 @@ int DoTheThing(TCPIP_NET_HANDLE netH);
 void GetDestinationAddress(char* buffer);
 void GetPort(char* buffer);
 void GetMessage(char* buffer);
-int SetDestinationAddressFromString(char* addressIn);
-int SetPortFromString(char* portIn);
-int SetMessageToSend(char* messageIn);
+int SetDestinationAddressFromString(const char* addressIn);
+int SetPortFromString(const char* portIn);
+int SetMessageToSend(const char* messageIn);
+uint8_t FindCrc8(const uint8_t* dataIn, int len);
 
 
 #endif // _MAINDEMO_H
